@@ -29,6 +29,7 @@ export const stockDetailStyles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 14,
     padding: 20,
+    marginBottom: 16,
   },
   stockName: {
     fontSize: 24,
@@ -56,4 +57,9 @@ export const stockDetailStyles = StyleSheet.create({
     fontWeight: "bold",
     color: "#2563eb",
   },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 12,
+  },  
 });

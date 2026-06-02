@@ -31,3 +31,23 @@ export const getStock = async (
 
   return response.data;
 };
+
+export type StockLatestPriceResponse = {
+  id: number;
+  stockCode: string;
+  currentPrice: number;
+  changeRate: number;
+  volume: number;
+  tradeDate: string;
+  collectedAt: string;
+};
+
+export const getLatestPrice = async (
+  stockCode: string
+): Promise<StockLatestPriceResponse> => {
+  const response = await apiClient.get(
+    `/api/stocks/${stockCode}/price/latest`
+  );
+
+  return response.data;
+};

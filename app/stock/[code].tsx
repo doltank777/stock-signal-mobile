@@ -1,14 +1,12 @@
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import {
-    ActivityIndicator,
-    Text,
-    View,
-} from "react-native";
+import { ActivityIndicator, Text, View } from "react-native";
 
 import {
+    getLatestPrice,
     getStock,
     StockDetailResponse,
+    StockLatestPriceResponse,
 } from "../../src/api/stockApi";
 import { stockDetailStyles as styles } from "../../src/styles/stockDetailStyles";
 
@@ -16,15 +14,22 @@ export default function StockDetailScreen() {
   const { code } = useLocalSearchParams<{ code: string }>();
 
   const [stock, setStock] = useState<StockDetailResponse | null>(null);
+  const [price, setPrice] = useState<StockLatestPriceResponse | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchStock = async () => {
+  const fetchStockDetail = async () => {
     if (!code) return;
 
     try {
       setLoading(true);
-      const result = await getStock(code);
-      setStock(result);
+
+      const [stockResult, priceResult] = await Promise.all([
+        getStock(code),
+        getLatestPrice(code),
+      ]);
+
+      setStock(stockResult);
+      setPrice(priceResult);
     } catch (error) {
       console.error("종목 상세 조회 실패", error);
     } finally {
@@ -32,8 +37,18 @@ export default function StockDetailScreen() {
     }
   };
 
+  const formatNumber = (value?: number | null) => {
+    if (value === undefined || value === null) return "-";
+    return value.toLocaleString();
+  };
+
+  const formatDateTime = (value?: string | null) => {
+    if (!value) return "-";
+    return value.replace("T", " ").slice(0, 19);
+  };
+
   useEffect(() => {
-    fetchStock();
+    fetchStockDetail();
   }, [code]);
 
   if (loading) {
@@ -64,6 +79,37 @@ export default function StockDetailScreen() {
         <View style={styles.infoRow}>
           <Text style={styles.label}>시장구분</Text>
           <Text style={styles.value}>{stock.marketType}</Text>
+        </View>
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.sectionTitle}>최신 현재가</Text>
+
+        <View style={styles.infoRow}>
+          <Text style={styles.label}>현재가</Text>
+          <Text style={styles.value}>
+            {formatNumber(price?.currentPrice)}원
+          </Text>
+        </View>
+
+        <View style={styles.infoRow}>
+          <Text style={styles.label}>등락률</Text>
+          <Text style={styles.value}>{price?.changeRate ?? "-"}%</Text>
+        </View>
+
+        <View style={styles.infoRow}>
+          <Text style={styles.label}>거래량</Text>
+          <Text style={styles.value}>{formatNumber(price?.volume)}</Text>
+        </View>
+
+        <View style={styles.infoRow}>
+          <Text style={styles.label}>거래일</Text>
+          <Text style={styles.value}>{price?.tradeDate ?? "-"}</Text>
+        </View>
+
+        <View style={styles.infoRow}>
+          <Text style={styles.label}>수집시간</Text>
+          <Text style={styles.value}>{formatDateTime(price?.collectedAt)}</Text>
         </View>
       </View>
     </View>
