@@ -1,7 +1,10 @@
 import axios from "axios";
 
 import { config } from "../config/config";
-import { getAccessToken } from "../storage/tokenStorage";
+import {
+  getAccessToken,
+  removeAccessToken,
+} from "../storage/tokenStorage";
 
 const apiClient = axios.create({
   baseURL: config.API_BASE_URL,
@@ -17,5 +20,18 @@ apiClient.interceptors.request.use(async (requestConfig) => {
 
   return requestConfig;
 });
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const status = error.response?.status;
+
+    if (status === 401 || status === 403) {      
+      await removeAccessToken();
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 export default apiClient;
