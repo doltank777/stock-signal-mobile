@@ -1,12 +1,17 @@
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
 import {
-    getLatestPrice,
-    getStock,
-    StockDetailResponse,
-    StockLatestPriceResponse,
+  addFavorite,
+  getFavorites,
+  removeFavorite,
+} from "../../src/api/favoriteApi";
+import {
+  getLatestPrice,
+  getStock,
+  StockDetailResponse,
+  StockLatestPriceResponse,
 } from "../../src/api/stockApi";
 import { stockDetailStyles as styles } from "../../src/styles/stockDetailStyles";
 
@@ -16,6 +21,8 @@ export default function StockDetailScreen() {
   const [stock, setStock] = useState<StockDetailResponse | null>(null);
   const [price, setPrice] = useState<StockLatestPriceResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [favorite, setFavorite] = useState(false);
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
 
   const fetchStockDetail = async () => {
     if (!code) return;
@@ -23,17 +30,44 @@ export default function StockDetailScreen() {
     try {
       setLoading(true);
 
-      const [stockResult, priceResult] = await Promise.all([
+      const [stockResult, priceResult, favoritesResult] = await Promise.all([
         getStock(code),
         getLatestPrice(code),
+        getFavorites(),
       ]);
 
       setStock(stockResult);
       setPrice(priceResult);
+
+      const isFavorite = favoritesResult.some(
+        (item) => item.stockCode === code
+      );
+
+      setFavorite(isFavorite);
     } catch (error) {
       console.error("종목 상세 조회 실패", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleToggleFavorite = async () => {
+    if (!stock || favoriteLoading) return;
+
+    try {
+      setFavoriteLoading(true);
+
+      if (favorite) {
+        await removeFavorite(stock.stockCode);
+        setFavorite(false);
+      } else {
+        await addFavorite(stock.stockCode);
+        setFavorite(true);
+      }
+    } catch (error) {
+      console.error("관심종목 처리 실패", error);
+    } finally {
+      setFavoriteLoading(false);
     }
   };
 
@@ -80,6 +114,28 @@ export default function StockDetailScreen() {
           <Text style={styles.label}>시장구분</Text>
           <Text style={styles.value}>{stock.marketType}</Text>
         </View>
+
+        <Pressable
+          style={[
+            styles.favoriteButton,
+            favorite && styles.favoriteButtonActive,
+          ]}
+          onPress={handleToggleFavorite}
+          disabled={favoriteLoading}
+        >
+          <Text
+            style={[
+              styles.favoriteButtonText,
+              favorite && styles.favoriteButtonTextActive,
+            ]}
+          >
+            {favoriteLoading
+              ? "처리 중..."
+              : favorite
+                ? "관심종목 해제"
+                : "관심종목 추가"}
+          </Text>
+        </Pressable>
       </View>
 
       <View style={styles.card}>
@@ -87,9 +143,7 @@ export default function StockDetailScreen() {
 
         <View style={styles.infoRow}>
           <Text style={styles.label}>현재가</Text>
-          <Text style={styles.value}>
-            {formatNumber(price?.currentPrice)}원
-          </Text>
+          <Text style={styles.value}>{formatNumber(price?.currentPrice)}원</Text>
         </View>
 
         <View style={styles.infoRow}>

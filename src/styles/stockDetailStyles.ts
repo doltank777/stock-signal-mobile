@@ -62,4 +62,24 @@ export const stockDetailStyles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 12,
   },  
+  favoriteButton: {
+    marginTop: 18,
+    height: 44,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#2563eb",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#fff",
+  },
+  favoriteButtonActive: {
+    backgroundColor: "#2563eb",
+  },
+  favoriteButtonText: {
+    color: "#2563eb",
+    fontWeight: "bold",
+  },
+  favoriteButtonTextActive: {
+    color: "#fff",
+  },  
 });
