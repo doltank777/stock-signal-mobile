@@ -2,6 +2,7 @@ import { router } from "expo-router";
 import { useState } from "react";
 import {
   Alert,
+  Platform,
   Text,
   TextInput,
   TouchableOpacity,
@@ -9,8 +10,10 @@ import {
 } from "react-native";
 
 import { login } from "../api/authApi";
+import { saveNotificationToken } from "../api/notificationApi";
 import { saveAccessToken } from "../storage/tokenStorage";
 import { loginStyles as styles } from "../styles/loginStyles";
+import { registerForPushNotificationsAsync } from "../utils/notification";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -25,7 +28,21 @@ export default function LoginScreen() {
     try {
       const token = await login({ email, password });
 
+      // 1. JWT 저장
       await saveAccessToken(token);
+
+      // 2. Expo Push Token 발급
+      const expoPushToken = await registerForPushNotificationsAsync();
+
+      console.log("Expo Push Token:", expoPushToken);
+
+      // 3. 백엔드에 Expo Push Token 저장
+      if (expoPushToken) {
+        await saveNotificationToken({
+          token: expoPushToken,
+          platform: Platform.OS === "ios" ? "ios" : "android",
+        });
+      }
 
       Alert.alert("성공", "로그인되었습니다.");
       router.replace("/signals");
@@ -38,7 +55,9 @@ export default function LoginScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Stock Signal</Text>
-      <Text style={styles.description}>로그인 후 추천 Signal을 확인하세요.</Text>
+      <Text style={styles.description}>
+        로그인 후 추천 Signal을 확인하세요.
+      </Text>
 
       <TextInput
         style={styles.input}
