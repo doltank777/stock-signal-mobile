@@ -2,7 +2,8 @@ import { router } from "expo-router";
 import { useEffect } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 
-import { getAccessToken } from "../storage/tokenStorage";
+import { getMe } from "../api/authApi";
+import { getAccessToken, removeAccessToken } from "../storage/tokenStorage";
 import { loginStyles as styles } from "../styles/loginStyles";
 
 export default function AuthLoadingScreen() {
@@ -13,9 +14,18 @@ export default function AuthLoadingScreen() {
   const checkToken = async () => {
     const token = await getAccessToken();
 
-    if (token) {
+    if (!token) {
+      router.replace("/login");
+      return;
+    }
+
+    try {
+      await getMe();
+
       router.replace("/signals");
-    } else {
+    } catch (error) {
+      await removeAccessToken();
+
       router.replace("/login");
     }
   };
