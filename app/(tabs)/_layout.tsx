@@ -36,6 +36,12 @@ export default function TabLayout() {
           title: "내 정보",
         }}
       />
+      <Tabs.Screen
+        name="index"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }
