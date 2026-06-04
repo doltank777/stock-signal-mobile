@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "489168810463",
+    "project_id": "stock-signal-8059a",
+    "storage_bucket": "stock-signal-8059a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:489168810463:android:f4c2c252e14c7d341b946a",
+        "android_client_info": {
+          "package_name": "com.stockapp.mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLPCI69qYWNhe2_DERM0VcJMORoR5-xXU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
