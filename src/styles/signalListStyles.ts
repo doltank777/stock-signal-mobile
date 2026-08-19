@@ -70,31 +70,6 @@ export const signalListStyles = StyleSheet.create({
     fontSize: 15,
     color: "#374151",
   },
-  priceRow: {
-    marginTop: 18,
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  label: {
-    fontSize: 12,
-    color: colors.mutedText,
-    marginBottom: 4,
-  },
-  value: {
-    fontSize: 15,
-    fontWeight: "700",
-    color: colors.text,
-  },
-  changeRate: {
-    fontSize: 16,
-    fontWeight: "800",
-  },
-  positive: {
-    color: colors.positive,
-  },
-  negative: {
-    color: colors.negative,
-  },
   date: {
     marginTop: 16,
     fontSize: 12,

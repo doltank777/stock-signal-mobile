@@ -65,21 +65,6 @@ export default function SignalListScreen() {
     return value.replace("T", " ").substring(0, 16);
   };
 
-  const getSignalLabel = (signal: Signal) => {
-    if (signal.searchConditionName?.trim()) {
-      return signal.searchConditionName;
-    }
-
-    if (signal.signalType === "VOLUME_SPIKE") return "거래량 급증";
-    if (signal.signalType === "MOVING_AVERAGE_BREAKOUT") return "이동평균 돌파";
-    if (signal.signalType === "SEARCH_CONDITION_MATCH") return "검색식 조건 일치";
-    return signal.signalType;
-  };
-
-  const formatNumber = (value: number | null) => {
-    return value === null ? "-" : value.toLocaleString();
-  };
-
   if (loading) {
     return (
       <View style={styles.center}>
@@ -116,12 +101,7 @@ export default function SignalListScreen() {
             <Text style={styles.emptyText}>조건에 맞는 종목이 감지되면 표시됩니다.</Text>
           </View>
         }
-        renderItem={({ item }) => {
-          const isSearchConditionSignal = item.searchConditionId != null;
-          const isPositive =
-            item.changeRatePercent !== null && item.changeRatePercent >= 0;
-
-          return (
+        renderItem={({ item }) => (
             <TouchableOpacity
               style={styles.card}
               activeOpacity={0.8}
@@ -132,12 +112,8 @@ export default function SignalListScreen() {
                     id: item.id,
                     stockCode: item.stockCode,
                     stockName: item.stockName,
-                    searchConditionId: item.searchConditionId ?? undefined,
-                    searchConditionName: item.searchConditionName ?? undefined,
+                    searchConditionName: item.searchConditionName,
                     message: item.message,
-                    baseValue: item.baseValue ?? undefined,
-                    currentValue: item.currentValue ?? undefined,
-                    changeRatePercent: item.changeRatePercent ?? undefined,
                     detectedAt: item.detectedAt,
                   },
                 })
@@ -155,50 +131,16 @@ export default function SignalListScreen() {
                     numberOfLines={2}
                     ellipsizeMode="tail"
                   >
-                    {getSignalLabel(item)}
+                    {item.searchConditionName}
                   </Text>
                 </View>
               </View>
 
               <Text style={styles.message}>{item.message}</Text>
 
-              {!isSearchConditionSignal && (
-                <View style={styles.priceRow}>
-                  <View>
-                    <Text style={styles.label}>기준값</Text>
-                    <Text style={styles.value}>
-                      {formatNumber(item.baseValue)}
-                    </Text>
-                  </View>
-
-                  <View>
-                    <Text style={styles.label}>현재값</Text>
-                    <Text style={styles.value}>
-                      {formatNumber(item.currentValue)}
-                    </Text>
-                  </View>
-
-                  <View>
-                    <Text style={styles.label}>변화율</Text>
-                    <Text
-                      style={[
-                        styles.changeRate,
-                        item.changeRatePercent !== null &&
-                          (isPositive ? styles.positive : styles.negative),
-                      ]}
-                    >
-                      {item.changeRatePercent === null
-                        ? "-"
-                        : `${isPositive ? "+" : ""}${item.changeRatePercent}%`}
-                    </Text>
-                  </View>
-                </View>
-              )}
-
               <Text style={styles.date}>{formatDate(item.detectedAt)}</Text>
             </TouchableOpacity>
-          );
-        }}
+        )}
       />
     </View>
   );

@@ -5,13 +5,6 @@ import { signalDetailStyles as styles } from "../../src/styles/signalDetailStyle
 
 export default function SignalDetailScreen() {
   const params = useLocalSearchParams();
-  const isSearchConditionSignal =
-    typeof params.searchConditionId === "string";
-  const searchConditionName =
-    typeof params.searchConditionName === "string" &&
-    params.searchConditionName.trim()
-      ? params.searchConditionName
-      : null;
 
   const formatDate = (value?: string | string[]) => {
     if (!value || Array.isArray(value)) return "-";
@@ -29,20 +22,6 @@ export default function SignalDetailScreen() {
     return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
   };
 
-  const formatNumber = (value?: string | string[]) => {
-    if (!value || Array.isArray(value)) return "-";
-
-    return Number(value).toLocaleString();
-  };
-
-  const formatChangeRate = (value?: string | string[]) => {
-    if (!value || Array.isArray(value)) return "-";
-
-    const number = Number(value);
-
-    return `${number > 0 ? "+" : ""}${number}%`;
-  };
-
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={() => router.back()}>
@@ -55,38 +34,13 @@ export default function SignalDetailScreen() {
       <View style={styles.card}>
         <Text style={styles.sectionTitle}>Signal 정보</Text>
 
-        {searchConditionName && (
-          <>
-            <Text style={styles.label}>검색식</Text>
-            <Text style={styles.value}>{searchConditionName}</Text>
+        <Text style={styles.label}>검색식</Text>
+        <Text style={styles.value}>{params.searchConditionName}</Text>
 
-            <View style={styles.divider} />
-          </>
-        )}
+        <View style={styles.divider} />
 
         <Text style={styles.label}>메시지</Text>
         <Text style={styles.value}>{params.message}</Text>
-
-        {!isSearchConditionSignal && (
-          <>
-            <View style={styles.divider} />
-
-            <Text style={styles.label}>기준값</Text>
-            <Text style={styles.value}>
-              {formatNumber(params.baseValue)} 원
-            </Text>
-
-            <Text style={styles.label}>현재값</Text>
-            <Text style={styles.value}>
-              {formatNumber(params.currentValue)} 원
-            </Text>
-
-            <Text style={styles.label}>변화율</Text>
-            <Text style={styles.rate}>
-              {formatChangeRate(params.changeRatePercent)}
-            </Text>
-          </>
-        )}
 
         <View style={styles.divider} />
 
