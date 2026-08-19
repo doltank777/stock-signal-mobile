@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   RefreshControl,
   Text,
@@ -9,7 +10,6 @@ import {
 } from "react-native";
 
 import { router } from "expo-router";
-import { Alert } from "react-native";
 import { removeAccessToken } from "../storage/tokenStorage";
 
 import { getSignals } from "../api/signalApi";
@@ -65,10 +65,15 @@ export default function SignalListScreen() {
     return value.replace("T", " ").substring(0, 16);
   };
 
-  const getSignalLabel = (type: string) => {
-    if (type === "VOLUME_SPIKE") return "거래량 급증";
-    if (type === "MOVING_AVERAGE_BREAKOUT") return "이동평균 돌파";
-    return type;
+  const getSignalLabel = (signal: Signal) => {
+    if (signal.searchConditionName?.trim()) {
+      return signal.searchConditionName;
+    }
+
+    if (signal.signalType === "VOLUME_SPIKE") return "거래량 급증";
+    if (signal.signalType === "MOVING_AVERAGE_BREAKOUT") return "이동평균 돌파";
+    if (signal.signalType === "SEARCH_CONDITION_MATCH") return "검색식 조건 일치";
+    return signal.signalType;
   };
 
   const formatNumber = (value: number | null) => {
@@ -112,8 +117,7 @@ export default function SignalListScreen() {
           </View>
         }
         renderItem={({ item }) => {
-          const isSearchConditionSignal =
-            item.signalType === "SEARCH_CONDITION_MATCH";
+          const isSearchConditionSignal = item.searchConditionId != null;
           const isPositive =
             item.changeRatePercent !== null && item.changeRatePercent >= 0;
 
@@ -128,7 +132,8 @@ export default function SignalListScreen() {
                     id: item.id,
                     stockCode: item.stockCode,
                     stockName: item.stockName,
-                    signalType: item.signalType,
+                    searchConditionId: item.searchConditionId ?? undefined,
+                    searchConditionName: item.searchConditionName ?? undefined,
                     message: item.message,
                     baseValue: item.baseValue ?? undefined,
                     currentValue: item.currentValue ?? undefined,
@@ -145,8 +150,12 @@ export default function SignalListScreen() {
                 </View>
 
                 <View style={styles.badge}>
-                  <Text style={styles.badgeText}>
-                    {getSignalLabel(item.signalType)}
+                  <Text
+                    style={styles.badgeText}
+                    numberOfLines={2}
+                    ellipsizeMode="tail"
+                  >
+                    {getSignalLabel(item)}
                   </Text>
                 </View>
               </View>

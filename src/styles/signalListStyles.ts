@@ -53,6 +53,8 @@ export const signalListStyles = StyleSheet.create({
   badge: {
     backgroundColor: colors.badgeBg,
     borderRadius: radius.pill,
+    flexShrink: 1,
+    maxWidth: "60%",
     paddingHorizontal: 12,
     paddingVertical: 6,
     alignSelf: "flex-start",
@@ -61,6 +63,7 @@ export const signalListStyles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "700",
     color: colors.badgeText,
+    textAlign: "center",
   },
   message: {
     marginTop: 14,

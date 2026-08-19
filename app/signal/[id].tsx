@@ -6,7 +6,12 @@ import { signalDetailStyles as styles } from "../../src/styles/signalDetailStyle
 export default function SignalDetailScreen() {
   const params = useLocalSearchParams();
   const isSearchConditionSignal =
-    params.signalType === "SEARCH_CONDITION_MATCH";
+    typeof params.searchConditionId === "string";
+  const searchConditionName =
+    typeof params.searchConditionName === "string" &&
+    params.searchConditionName.trim()
+      ? params.searchConditionName
+      : null;
 
   const formatDate = (value?: string | string[]) => {
     if (!value || Array.isArray(value)) return "-";
@@ -49,6 +54,15 @@ export default function SignalDetailScreen() {
 
       <View style={styles.card}>
         <Text style={styles.sectionTitle}>Signal 정보</Text>
+
+        {searchConditionName && (
+          <>
+            <Text style={styles.label}>검색식</Text>
+            <Text style={styles.value}>{searchConditionName}</Text>
+
+            <View style={styles.divider} />
+          </>
+        )}
 
         <Text style={styles.label}>메시지</Text>
         <Text style={styles.value}>{params.message}</Text>

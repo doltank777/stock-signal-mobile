@@ -3,6 +3,8 @@ export interface Signal {
   stockCode: string;
   stockName: string;
   signalType: string;
+  searchConditionId: number | null;
+  searchConditionName: string | null;
   message: string;
   baseValue: number | null;
   currentValue: number | null;
