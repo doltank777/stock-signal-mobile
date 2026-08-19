@@ -4,9 +4,9 @@ export interface Signal {
   stockName: string;
   signalType: string;
   message: string;
-  baseValue: number;
-  currentValue: number;
-  changeRate: number;
-  changeRatePercent: number;
+  baseValue: number | null;
+  currentValue: number | null;
+  changeRate: number | null;
+  changeRatePercent: number | null;
   detectedAt: string;
 }

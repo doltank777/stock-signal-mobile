@@ -71,6 +71,10 @@ export default function SignalListScreen() {
     return type;
   };
 
+  const formatNumber = (value: number | null) => {
+    return value === null ? "-" : value.toLocaleString();
+  };
+
   if (loading) {
     return (
       <View style={styles.center}>
@@ -108,7 +112,10 @@ export default function SignalListScreen() {
           </View>
         }
         renderItem={({ item }) => {
-          const isPositive = item.changeRatePercent >= 0;
+          const isSearchConditionSignal =
+            item.signalType === "SEARCH_CONDITION_MATCH";
+          const isPositive =
+            item.changeRatePercent !== null && item.changeRatePercent >= 0;
 
           return (
             <TouchableOpacity
@@ -123,9 +130,9 @@ export default function SignalListScreen() {
                     stockName: item.stockName,
                     signalType: item.signalType,
                     message: item.message,
-                    baseValue: item.baseValue,
-                    currentValue: item.currentValue,
-                    changeRatePercent: item.changeRatePercent,
+                    baseValue: item.baseValue ?? undefined,
+                    currentValue: item.currentValue ?? undefined,
+                    changeRatePercent: item.changeRatePercent ?? undefined,
                     detectedAt: item.detectedAt,
                   },
                 })
@@ -146,34 +153,38 @@ export default function SignalListScreen() {
 
               <Text style={styles.message}>{item.message}</Text>
 
-              <View style={styles.priceRow}>
-                <View>
-                  <Text style={styles.label}>기준값</Text>
-                  <Text style={styles.value}>
-                    {item.baseValue.toLocaleString()}
-                  </Text>
-                </View>
+              {!isSearchConditionSignal && (
+                <View style={styles.priceRow}>
+                  <View>
+                    <Text style={styles.label}>기준값</Text>
+                    <Text style={styles.value}>
+                      {formatNumber(item.baseValue)}
+                    </Text>
+                  </View>
 
-                <View>
-                  <Text style={styles.label}>현재값</Text>
-                  <Text style={styles.value}>
-                    {item.currentValue.toLocaleString()}
-                  </Text>
-                </View>
+                  <View>
+                    <Text style={styles.label}>현재값</Text>
+                    <Text style={styles.value}>
+                      {formatNumber(item.currentValue)}
+                    </Text>
+                  </View>
 
-                <View>
-                  <Text style={styles.label}>변화율</Text>
-                  <Text
-                    style={[
-                      styles.changeRate,
-                      isPositive ? styles.positive : styles.negative,
-                    ]}
-                  >
-                    {isPositive ? "+" : ""}
-                    {item.changeRatePercent}%
-                  </Text>
+                  <View>
+                    <Text style={styles.label}>변화율</Text>
+                    <Text
+                      style={[
+                        styles.changeRate,
+                        item.changeRatePercent !== null &&
+                          (isPositive ? styles.positive : styles.negative),
+                      ]}
+                    >
+                      {item.changeRatePercent === null
+                        ? "-"
+                        : `${isPositive ? "+" : ""}${item.changeRatePercent}%`}
+                    </Text>
+                  </View>
                 </View>
-              </View>
+              )}
 
               <Text style={styles.date}>{formatDate(item.detectedAt)}</Text>
             </TouchableOpacity>

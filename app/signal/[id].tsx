@@ -5,6 +5,8 @@ import { signalDetailStyles as styles } from "../../src/styles/signalDetailStyle
 
 export default function SignalDetailScreen() {
   const params = useLocalSearchParams();
+  const isSearchConditionSignal =
+    params.signalType === "SEARCH_CONDITION_MATCH";
 
   const formatDate = (value?: string | string[]) => {
     if (!value || Array.isArray(value)) return "-";
@@ -51,22 +53,26 @@ export default function SignalDetailScreen() {
         <Text style={styles.label}>메시지</Text>
         <Text style={styles.value}>{params.message}</Text>
 
-        <View style={styles.divider} />
+        {!isSearchConditionSignal && (
+          <>
+            <View style={styles.divider} />
 
-        <Text style={styles.label}>기준값</Text>
-        <Text style={styles.value}>
-          {formatNumber(params.baseValue)} 원
-        </Text>
+            <Text style={styles.label}>기준값</Text>
+            <Text style={styles.value}>
+              {formatNumber(params.baseValue)} 원
+            </Text>
 
-        <Text style={styles.label}>현재값</Text>
-        <Text style={styles.value}>
-          {formatNumber(params.currentValue)} 원
-        </Text>
+            <Text style={styles.label}>현재값</Text>
+            <Text style={styles.value}>
+              {formatNumber(params.currentValue)} 원
+            </Text>
 
-        <Text style={styles.label}>변화율</Text>
-        <Text style={styles.rate}>
-          {formatChangeRate(params.changeRatePercent)}
-        </Text>
+            <Text style={styles.label}>변화율</Text>
+            <Text style={styles.rate}>
+              {formatChangeRate(params.changeRatePercent)}
+            </Text>
+          </>
+        )}
 
         <View style={styles.divider} />
 
